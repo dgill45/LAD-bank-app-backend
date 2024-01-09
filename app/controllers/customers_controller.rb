@@ -1,29 +1,56 @@
 class CustomersController < ApplicationController
+    # GET /customers
     def index
-        customer = Customer.all
-        render json: customer
+        customers = Customer.all
+        render json: customers
     end
 
+    # POST /customers
+  def create
+    customer = Customer.create(customer_params)
+    render json: customer, status: :created
+  end
+
+    # GET /customer/:id
     def show
-        Customer = Customer.find(params[:id])
+        customer = find_customer
         if customer
             render json: customer
         else
-            render json: { error: 'Customer not found' }, status: :not_found
+            render_not_found_response
         end
     end
-
     
     # PATCH /customer/:id
     def update
-        customer = Customer.find_by(id: params[:id])
+        customer = find_customer
         if customer
-        customer.update(customer_params)
-        render json: customer
+            customer.update(customer_params)
+            render json: customer
         else
-        render json: { error: "Customer not found" }, status: :not_found
+            render_not_found_response
         end
     end
+
+    def destroy 
+        customer = find_customer
+        if customer
+          customer.destroy
+          head :no_content
+        else
+          render_not_found_response
+        end
+      end
+
+      private
+
+      def render_not_found_response
+        render json: { error: "Customer not found" }, status: :not_found
+      end
+
+      def find_customer
+        Customer.find(params[:id])
+      end
 
 
 end
