@@ -1,4 +1,5 @@
 class CustomersController < ApplicationController
+    # before_action :authorize, only: [:show, :update, :destroy]
     # GET /customers
     def index
         customers = Customer.all
@@ -51,6 +52,12 @@ class CustomersController < ApplicationController
       def find_customer
         Customer.find(params[:id])
       end
+
+      def customer_params
+        params.permit(:first_name, :last_name, :email, :password)
+      end
+
+    end
 
 
 end
