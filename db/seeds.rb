@@ -5,5 +5,38 @@
 #
 #   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
 #   Character.create(name: "Luke", movie: movies.first)
-Customer.create!(first_name: "Donell", last_name: "Gill", email: "dag@gmail.com", password: "12345678")
-Customer.create!(first_name: "Lisa", last_name: "Boone", email: "boonies@optonline.net", password: "98765432")
+
+# Clear existing data
+#Transaction.destroy_all
+#Account.destroy_all
+Customer.destroy_all
+
+# Create Customers
+5.times do |i|
+  Customer.create!(
+    first_name: "First#{i}",
+    last_name: "Last#{i}",
+    email: "email#{i}@example.com",
+    password: "password#{i}"
+  )
+end
+
+# Create Accounts for each Customer
+Customer.find_each do |customer|
+  2.times do |i|
+    account = customer.accounts.create!(
+      account_type: ["Checking", "Savings"].sample,
+      balance: rand(1000..5000)
+    )
+
+    # Create Transactions for each Account
+    5.times do
+      account.transactions.create!(
+        amount: rand(10..500),
+        transaction_type: ["Deposit", "Withdrawal"].sample,
+        balance: account.balance, # This should be calculated based on the transaction type and amount
+        date: Date.today - rand(1..30).days
+      )
+    end
+  end
+end
