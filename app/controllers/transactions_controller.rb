@@ -1,41 +1,44 @@
 class TransactionsController < ApplicationController
-    before_action :authorize, only: [:show, :update, :destroy]
-    # GET /transactions
+    before_action :set_customer
+    before_action :set_account
+    #before_action :authorize, only: [:show, :update, :destroy]
+    # GET /customers/:customer_id/accounts/:account_id/transactions
     def index
-        transactions = Transaction.all
-        render json: transactions
+      transactions = @account.transactions
+      render json: transactions
     end
 
-    # POST /transactions
+    # POST /customers/:customer_id/accounts/:account_id/transactions
   def create
-    transaction = Transaction.create(transaction_params)
+    transaction = @account.transactions.create(transaction_params)
     render json: transaction, status: :created
   end
 
-    # GET /transaction/:id
+    # GET /customers/:customer_id/accounts/:account_id/transactions/:transaction_id
     def show
-        transaction = find_transaction
-        if transaction
-            render json: transaction
+      find_transaction
+        if @transaction
+            render json: @transaction
         else
             render_not_found_response
         end
     end
     
-    # PATCH /transaction/:id
+    # PATCH /customers/:customer_id/accounts/:account_id/transactions/:transaction_id
     def update
-        transaction = find_transaction
-        if transaction
+      find_transaction
+        if @transaction
             transaction.update(transaction_params)
-            render json: transaction
+            render json: @transaction
         else
             render_not_found_response
         end
     end
 
+    # DELETE /customers/:customer_id/accounts/:account_id/transactions/:transaction_id
     def destroy 
-        transaction = find_transaction
-        if transaction
+      find_transaction
+        if @transaction
           transaction.destroy
           head :no_content
         else
@@ -44,16 +47,29 @@ class TransactionsController < ApplicationController
       end
 
       private
+      def set_customer
+        @customer = Customer.find(params[:customer_id])
+      rescue ActiveRecord::RecordNotFound
+        render_not_found_response('Customer')
+      end
 
-      def render_not_found_response
-        render json: { error: "Transaction not found" }, status: :not_found
+      def set_account
+        @account = @customer.accounts.find(params[:account_id])
+      rescue ActiveRecord::RecordNotFound
+        render_not_found_response('Account')
+      end
+
+      def render_not_found_response(resource)
+        render json: { error: "#{resource} not found" }, status: :not_found
       end
 
       def find_transaction
-        Transaction.find(params[:id])
+        @transaction = @account.transactions.find(params[:id])
+        rescue ActiveRecord::RecordNotFound
+          render_not_found_response('Transaction')
       end
 
       def transaction_params
-        params.permit(:account_id, :transaction_type, :amount, :date)
+        params.permit(:transaction_type, :amount, :date)
       end
 end

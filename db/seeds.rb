@@ -7,8 +7,8 @@
 #   Character.create(name: "Luke", movie: movies.first)
 
 # Clear existing data
-#Transaction.destroy_all
-#Account.destroy_all
+Transaction.destroy_all
+Account.destroy_all
 Customer.destroy_all
 
 # Create Customers
@@ -31,11 +31,11 @@ Customer.find_each do |customer|
 
     # Create Transactions for each Account
     5.times do
+      transaction_date = Date.today - rand(1..30).days
       account.transactions.create!(
         amount: rand(10..500),
         transaction_type: ["Deposit", "Withdrawal"].sample,
-        balance: account.balance, # This should be calculated based on the transaction type and amount
-        date: Date.today - rand(1..30).days
+        created_at: transaction_date
       )
     end
   end

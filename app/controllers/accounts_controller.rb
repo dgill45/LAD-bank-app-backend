@@ -1,60 +1,70 @@
 class AccountsController < ApplicationController
-    before_action :authorize, only: [:show, :update, :destroy]
-    # GET /accounts
+    before_action :set_customer
+    #before_action :authorize, only: [:show, :update, :destroy]
+    # GET customers/:customer_id/accounts
     def index
-        accounts = Account.all
-        render json: accounts
+      accounts = @customer.accounts
+      render json: accounts
     end
 
-    # POST /accounts
+    # POST customers/:customer_id/accounts
     def create
-        account = Account.create(account_params)
-        render json: account, status: :created
+      account = @customer.accounts.create(account_params)
+      render json: account, status: :created
     end
 
-    # GET /account/:id
+    # GET customers/:customer_id/accounts/:id
     def show
-        account = find_account
-        if account
-            render json: account
-        else
-            render_not_found_response
-        end
+      find_account
+      if @account
+          render json: @account
+      else
+          render_not_found_response
+      end
     end
     
-    # PATCH /account/:id
+    # PATCH customers/:customer_id/account/:id
     def update
-        account = find_account
-        if account
-            account.update(account_params)
-            render json: account
+      find_account
+        if @account
+           account.update(account_params)
+           render json: account
         else
             render_not_found_response
         end
     end
 
+    # DELETE customers/:customer_id/account/:id
     def destroy 
-        account = find_account
-        if account
-          account.destroy
-          head :no_content
-        else
-          render_not_found_response
-        end
+      find_account
+      if account
+        account.destroy
+        head :no_content
+      else
+        render_not_found_response
       end
+    end
 
       private
+
+      def set_customer
+        @customer = Customer.find(params[:customer_id])
+      rescue ActiveRecord::RecordNotFound
+        render_not_found_response('Customer')
+      end
 
       def render_not_found_response
         render json: { error: "Account not found" }, status: :not_found
       end
 
       def find_account
-        Account.find(params[:id])
+        @account = @customer.accounts.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        render_not_found_response('Account')
       end
 
       def account_params
-        params.permit(:account_number, :balance, :customer_id)
+        params.permit(:account_number, :balance, :account_type)
       end
 
     end
