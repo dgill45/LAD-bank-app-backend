@@ -1,4 +1,5 @@
 class CustomersController < ApplicationController
+    skip_before_action :verify_authenticity_token, only: [:create]
       # before_action :authorize, only: [:show, :update, :destroy]
       # GET /customers
       def index
