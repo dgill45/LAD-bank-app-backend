@@ -1,4 +1,5 @@
 class TransactionsController < ApplicationController
+    skip_before_action :verify_authenticity_token, only: [:create]
     before_action :set_customer
     before_action :set_account
     #before_action :authorize, only: [:show, :update, :destroy]
@@ -59,8 +60,8 @@ class TransactionsController < ApplicationController
         render_not_found_response('Account')
       end
 
-      def render_not_found_response(resource)
-        render json: { error: "#{resource} not found" }, status: :not_found
+      def render_not_found_response(entity)
+        render json: { error: "#{entity} not found" }, status: :not_found
       end
 
       def find_transaction

@@ -46,8 +46,8 @@ class CustomersController < ApplicationController
 
       private
 
-      def render_not_found_response
-        render json: { error: "Customer not found" }, status: :not_found
+      def render_not_found_response(entity)
+        render json: { error: "#{entity} not found" }, status: :not_found
       end
 
       def find_customer

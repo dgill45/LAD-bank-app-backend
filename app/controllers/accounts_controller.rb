@@ -1,4 +1,5 @@
 class AccountsController < ApplicationController
+    skip_before_action :verify_authenticity_token, only: [:create]
     before_action :set_customer
     #before_action :authorize, only: [:show, :update, :destroy]
     # GET customers/:customer_id/accounts
@@ -27,7 +28,7 @@ class AccountsController < ApplicationController
     def update
       find_account
         if @account
-           account.update(account_params)
+           @account.update(account_params)
            render json: account
         else
             render_not_found_response
@@ -37,7 +38,7 @@ class AccountsController < ApplicationController
     # DELETE customers/:customer_id/account/:id
     def destroy 
       find_account
-      if account
+      if @account
         account.destroy
         head :no_content
       else
@@ -53,8 +54,8 @@ class AccountsController < ApplicationController
         render_not_found_response('Customer')
       end
 
-      def render_not_found_response
-        render json: { error: "Account not found" }, status: :not_found
+      def render_not_found_response(entity)
+        render json: { error: "#{entity} not found" }, status: :not_found
       end
 
       def find_account
