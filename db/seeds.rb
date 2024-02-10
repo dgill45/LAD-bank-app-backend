@@ -10,21 +10,42 @@
 Transaction.destroy_all
 Account.destroy_all
 Customer.destroy_all
+Admin.destroy_all
+User.destroy_all
 
-# Create Customers
-5.times do |i|
-  Customer.create!(
-    first_name: "First#{i}",
-    last_name: "Last#{i}",
-    email: "email#{i}@example.com",
-    password: "password#{i}"
+# Create Admins and their Users
+3.times do |i|
+  admin = Admin.create!(
+    # Add attributes specific to your Admin model
+    first_name: "AdminFirst#{i}",
+    last_name: "AdminLast#{i}"
+  )
+
+  User.create!(
+    email: "admin#{i}@example.com",
+    password: "adminpassword#{i}",
+    role: admin
   )
 end
 
-# Create Accounts for each Customer
-Customer.find_each do |customer|
-  2.times do |i|
-    account = customer.accounts.create!(
+# Create Customers and their Users
+5.times do |i|
+  customer = Customer.create!(
+    first_name: "CustomerFirst#{i}",
+    last_name: "CustomerLast#{i}"
+    # You might have other attributes specific to the Customer model
+  )
+
+  user = User.create!(
+    email: "customer#{i}@example.com",
+    password: "customerpassword#{i}",
+    role: customer
+  )
+
+  # Create Accounts for each Customer
+  2.times do |j|
+    account = Account.create!(
+      customer: customer,
       account_type: ["Checking", "Savings"].sample,
       balance: rand(1000..5000)
     )
