@@ -1,15 +1,20 @@
 class UsersController < ApplicationController
+  VALID_ROLES = ['admin', 'customer'].freeze
 
     def signup
-      role = create_role(params[:role_type])
-      return render json: { errors: role.errors.full_messages }, status: :unprocessable_entity unless role&.valid?
-  
-      @user = User.new(user_params.merge(role: role))
-      if @user.save
-        session[:user_id] = @user.id
-        render json: { status: 'Created', user: @user, role: params[:role_type] }, status: :created
-      else
-        render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
+      ActiveRecord::Base.transaction do
+        role = create_role(params[:role_type])
+        return render json: { errors: role[:error] }, status: role[:status] if role.is_a?(Hash)
+      
+    
+        @user = User.new(user_params.merge(role: role))
+        if @user.save
+          session[:user_id] = @user.id
+          render json: { status: 'Created', user: @user, role: params[:role_type] }, status: :created
+        else
+          render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
+          raise ActiveRecord::Rollback
+        end
       end
     end
   
@@ -22,7 +27,7 @@ class UsersController < ApplicationController
       when 'customer'
         Customer.new(customer_params)
       else
-        nil # or handle unknown role type
+        return { error: 'Invalid role type', status: :unprocessable_entity }
       end
     end
   
