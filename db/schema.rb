@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_01_24_200716) do
+ActiveRecord::Schema[7.0].define(version: 2024_02_19_184632) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -35,6 +35,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_24_200716) do
     t.string "last_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "email"
+    t.string "password_digest"
+    t.string "username"
+    t.index ["email"], name: "index_customers_on_email", unique: true
   end
 
   create_table "transactions", force: :cascade do |t|
@@ -52,9 +56,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_24_200716) do
     t.string "password_digest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "role_type", null: false
-    t.bigint "role_id", null: false
-    t.index ["role_type", "role_id"], name: "index_users_on_role"
+    t.string "first_name"
+    t.string "last_name"
   end
 
   add_foreign_key "accounts", "customers"

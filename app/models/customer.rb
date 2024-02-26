@@ -1,4 +1,4 @@
 class Customer < ApplicationRecord
-    has_one :user, as: :role, dependent: :destroy
+    has_secure_password
     has_many :accounts
 end

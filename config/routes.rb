@@ -6,17 +6,16 @@ Rails.application.routes.draw do
       end
     end
   # Session management
-    
     post '/login', to: 'sessions#login'
     delete '/logout', to: 'sessions#logout'
 
   # User management
-    resources :users, only: [:create, :show, :update, :destroy] do
+    resources :users, only: [:index, :create, :show, :update, :destroy] do
 
     end
 
   # Signup route (if you're handling signup in UsersController)
-    post '/signup', to: 'users#signup'
+    post '/signup', to: 'users#create'
 
   get 'home/index'
     # Root route

@@ -1,4 +1,4 @@
 class User < ApplicationRecord
-    belongs_to :role, polymorphic: true
+    class NotAuthorized < StandardError; end
     has_secure_password
 end
