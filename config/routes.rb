@@ -7,6 +7,7 @@ Rails.application.routes.draw do
     end
   # Session management
     post '/login', to: 'sessions#login'
+    get '/logged_in', to: 'sessions#is_logged_in?'
     delete '/logout', to: 'sessions#logout'
 
   # User management
@@ -14,8 +15,8 @@ Rails.application.routes.draw do
 
     end
 
-  # Signup route (if you're handling signup in UsersController)
-    post '/signup', to: 'users#create'
+  # Signup route (if you're handling signup in Customers Controller)
+    post '/signup', to: 'customers#create'
 
   get 'home/index'
     # Root route
