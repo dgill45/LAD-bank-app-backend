@@ -10,11 +10,24 @@ class TransactionsController < ApplicationController
     end
 
     # POST /customers/:customer_id/accounts/:account_id/transactions
-  def create
-    transaction = @account.transactions.create(transaction_params)
-    render json: transaction, status: :created
-  end
+    def create
+      transaction = @account.transactions.build(transaction_params)
+      if transaction.transaction_type == 'deposit'
+        @account.balance += transaction.amount.to_f
+      else transaction.transaction_type == 'withdrawal'
+      @account.balance -= transaction.amount.to_f
+    end
 
+    ActiveRecord::Base.transaction do
+      transaction.save!
+      @account.save!
+    end
+
+    render json: transaction, status: :created
+    rescue ActiveRecord::RecordInvalid => e
+      render json: {error: e.message}
+    end
+    
     # GET /customers/:customer_id/accounts/:account_id/transactions/:transaction_id
     def show
       find_transaction

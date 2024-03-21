@@ -10,8 +10,14 @@ class AccountsController < ApplicationController
 
     # POST customers/:customer_id/accounts
     def create
-      account = @customer.accounts.create(account_params)
-      render json: account, status: :created
+      account = @customer.accounts.build(account_params)
+      account.balance = params[:account][:balance].to_f if params[:account][:balance].present?
+
+      if account.save
+        render json: account, status: :created
+      else
+        render json: account.errors, status: :unprocessable_entity
+      end
     end
 
     # GET customers/:customer_id/accounts/:id
@@ -65,7 +71,7 @@ class AccountsController < ApplicationController
       end
 
       def account_params
-        params.permit(:account_number, :balance, :account_type)
+        params.require(:account).permit(:account_number, :balance, :initial_deposit, :account_type)
       end
 
     end
